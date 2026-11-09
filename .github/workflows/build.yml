@@ -1,0 +1,32 @@
+name: Build Windows Exe
+
+on:
+  workflow_dispatch: # 允許手動點按鈕觸發打包
+
+jobs:
+  build:
+    runs-on: windows-latest # 借用微軟雲端 Windows 電腦
+
+    steps:
+      - name: 下載你的遊戲程式碼
+        uses: actions/checkout@v4
+
+      - name: 安裝 Python 環境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安裝 PyInstaller
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+
+      - name: 開始打包成獨立 exe (加 -w 參數隱藏黑色終端機)
+        run: |
+          pyinstaller --onefile -w main.py
+
+      - name: 上傳做好的遊戲供下載
+        uses: actions/upload-artifact@v4
+        with:
+          name: NeonSnake-Game
+          path: dist/*.exe
